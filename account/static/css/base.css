@@ -1,0 +1,40 @@
+header > nav > ul {
+    list-style: none;
+    text-align: center;
+    padding: 5px;
+}
+header > nav > ul > li {
+    display: inline;
+    padding: 0 15px;
+ 
+    margin: 0;
+}
+nav{
+    background-color: greenyellow; 
+}
+header > nav > ul > li:hover{
+    background-color: #baa21d;
+}
+a:hover{
+    text-decoration: none;
+    padding: .2em 1em; 
+	color: #fff; 
+	background-color: #000; 
+}
+form{
+    
+    margin: auto;
+    width: 40%;
+    padding: 0 10%;
+}
+
+.left{
+    float: right
+}
+
+.active{
+    text-decoration: none;
+    padding: .2em 1em; 
+    color: #fff; 
+    background-color: #000; 
+}

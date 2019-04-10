@@ -1,0 +1,7 @@
+{%extends 'base.html'%}
+{%block body%}
+  <div>
+  	<h1>hello {%if user.get_full_name%}{{user.get_full_name}}{%else%}{{user.username}}{%endif%}</h1>
+  	
+  </div>
+{%endblock%}
