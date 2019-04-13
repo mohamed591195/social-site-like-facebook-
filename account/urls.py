@@ -47,7 +47,8 @@ urlpatterns = [
         template_name='account/PassResetDone.html'),
         name='pass_reset_done_url'),
     
-    path('activate/<uidb64>/<token>/', views.activate, name='activate')
+    path('activate/<uidb64>/<token>/', views.activate, name='activate_url'),
+    path('edit_info/<username>/', views.EditInfo, name='edit_info_url')
 
 ]
 

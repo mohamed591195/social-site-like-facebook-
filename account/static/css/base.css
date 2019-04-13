@@ -38,3 +38,8 @@ form{
     color: #fff; 
     background-color: #000; 
 }
+
+.post{
+    margin: auto;
+    width: 50%;
+}

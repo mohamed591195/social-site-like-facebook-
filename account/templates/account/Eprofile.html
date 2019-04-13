@@ -3,10 +3,10 @@
 
 {%block body%}
 
-<form method="POST" action="{%url 'account:login_url'%}">
+<form method="POST" action="">
     {% csrf_token %}
-    {{form|crispy}}
-    <input type="hidden" value="{{next}}">
+    {{user_form|crispy}}
+    {{pro_form|crispy}}
     <button type="submit">Login</button>
 </form>
 {%endblock%}

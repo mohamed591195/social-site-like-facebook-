@@ -1,6 +1,6 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
-from .forms import RegisterForm
+from .forms import RegisterForm, ProfileEditForm, UserEditForm
 from django.contrib import messages
 from django.views.generic import TemplateView
 from .models import Profile
@@ -11,6 +11,8 @@ from django.utils.encoding import force_bytes, force_text
 from .tokens import account_activation_token
 from django.core.mail import EmailMessage 
 from django.http import HttpResponse
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 
 
 def RegisterView(request):
@@ -37,12 +39,9 @@ def RegisterView(request):
             #send it
             final_email.send()
             return HttpResponse('please confirm your email by clicking the link we have sent to you')
-            username = cd['username']
-            password = cd['password2']
-            user = authenticate(request , username=username, password=password)
-            login(request, user)
-            messages.success(request, 'you have registered and logged in successfully {}'.format(user.get_full_name()))
-            return redirect('account:dash_url')
+            
+           
+            
     else:
         form = RegisterForm()
     return render(request, 'account/register.html', {'form': form, 'title': 'register', 'source': 'register'})
@@ -51,5 +50,36 @@ class DashView(TemplateView):
     template_name = 'account/dash.html'
     extra_context = {'source': 'dash'}
 
-# def Edit(request):
-#     if request.method == 'POST':
+def activate(request, uidb64, token):
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        print(uid)
+        user = User.objects.get(id=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        messages.success(request, 'you have registered and confirmed your email successfully {}'.format(user.get_full_name()))
+        return redirect('account:dash_url')
+    else:
+        return HttpResponse('activation link is invalid')
+
+@login_required
+def EditInfo(request, username):
+    user = get_object_or_404(User, username=username)
+    if request.user == user:
+        if request.method == 'POST':
+            pro_form = ProfileEditForm(data=request.POST, files=request.FILES, instance=user.profile)
+            user_form = UserEditForm(data=request.POST, instance=user)
+            if pro_form.is_valid() and user_form.is_valid():
+                pro_form.save()
+                user_form.save()
+                messages.success(request, 'your account have been updated successfully {}'.format(user.get_full_name()))
+        else:
+            pro_form = ProfileEditForm(instance=user.profile)
+            user_form = UserEditForm(instance=user)
+        return render(request, 'account/Eprofile.html', {'user_form': user_form, 'pro_form': pro_form})
+    else:
+        return HttpResponse('it\'s forbidden , you are not allowed to get this page')
+

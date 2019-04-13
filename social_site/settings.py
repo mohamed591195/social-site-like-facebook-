@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     #third_party
     'crispy_forms',
+    'sorl.thumbnail',
     #own
     'account.apps.AccountConfig',
     'posts.apps.PostsConfig'
@@ -134,7 +135,7 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'account.authentication.EmailAuthentication',
     # 'social_core.backends.facebook.FacebookOAuth2',
-    'social_core.backends.google.GoogleOAuth2',
+    
 ]
 
 EMAIL_HOST = 'smtp.gmail.com'

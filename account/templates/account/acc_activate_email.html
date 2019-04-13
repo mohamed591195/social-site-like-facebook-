@@ -1,4 +1,4 @@
-{%autoescap off%}
+{%autoescape off%}
 hi {{user.get_full_name}}, your user name is {{user.username}}
-http://{{domain}}{%url 'account:activate' uidb64=uid token=token %}
-{%endautoescap%}
+http://{{domain}}{%url 'account:activate_url' uidb64=uid token=token %}
+{%endautoescape%}

@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from .models import Profile
 # from .models import Profile
 
 class RegisterForm(UserCreationForm):
@@ -14,12 +15,15 @@ class RegisterForm(UserCreationForm):
             raise forms.ValidationError(' user with this email is already registered')    
         return email
 
-# class ProfileEditForm(forms.ModelForm):
-#     class Meta:
-#         model = Profile
-#         fields = '__all__'
-
-# class UserEditForm(forms.ModelForm):
-#     class Meta:
-#         model = User
-#         fields = ['first_name', 'last_name', 'username']
+class ProfileEditForm(forms.ModelForm):
+    birth = forms.DateField(widget=forms.DateInput(attrs={'type':'date'}))
+    class Meta:
+        model = Profile
+        fields = ['image' ,'gender', 'birth', ]
+        widgets = {
+            'birth' :forms.DateInput
+        }
+class UserEditForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'username']
