@@ -12,7 +12,11 @@
 <body>
     <header>
         <nav>
-            <ul>
+            <ul> 
+               
+                <li>
+                        <a href="{%url 'posts:post_list_url'%}" {%if source == 'home'%} class="active" {%endif%}>home</a>
+                </li>
                 <li>
                         <a href="{%url 'account:dash_url'%}" {%if source == 'dash'%} class="active" {%endif%}>dash</a>
                 </li>
@@ -20,8 +24,9 @@
                     <a href="#" {%if source == 'active users'%} class="active" {%endif%}>most active users</a>
                 </li>
                 <li>
-                    <a href="#" {%if source == 'top images'%} class="active" {%endif%}>top rated images</a>
+                    <a href="#" {%if source == 'top images'%} class="active" {%endif%}>top rated posts</a>
                 </li>
+                
                 {%if not user.is_authenticated%}
                 <li class='left'>
                     <a href="{%url 'account:register_url'%}" {%if source == 'register'%} class="active" {%endif%}>Register</a>
@@ -29,9 +34,16 @@
                 <li class="left">
                     <a href="{%url 'account:login_url'%}" {%if source == 'login'%} class="active" {%endif%}>login</a>
                 </li>
+                
                 {%else%}
                 <li class="left">
                     <a href="{%url 'account:logout_url'%}" >logout</a>
+                </li>
+                <li class="right">
+                        <a href="{% url 'account:edit_info_url' user.username%}" {%if source == 'edit_profile'%} class="active" {%endif%}>{{user.get_full_name}}</a>
+                </li>
+                <li >
+                        <a href="{% url 'posts:create_post_url'%}" {%if source == 'create_post'%} class="active" {%endif%}>sharea an idea</a>
                 </li>
                 {%endif%}
             </ul>

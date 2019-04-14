@@ -3,10 +3,10 @@
 
 {%block body%}
 
-<form method="POST" action="">
+<form method="POST" action="" enctype="multipart/form-data">
     {% csrf_token %}
     {{user_form|crispy}}
     {{pro_form|crispy}}
-    <button type="submit">Login</button>
+    <button type="submit">Save</button>
 </form>
 {%endblock%}

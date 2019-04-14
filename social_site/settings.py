@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'sorl.thumbnail',
     #own
     'account.apps.AccountConfig',
-    'posts.apps.PostsConfig'
+    'posts.apps.PostsConfig',
+    'comments.apps.CommentsConfig'
 ]
 
 MIDDLEWARE = [

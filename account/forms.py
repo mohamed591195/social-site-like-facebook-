@@ -12,7 +12,7 @@ class RegisterForm(UserCreationForm):
     def clean_email(self):
         email = self.cleaned_data['email']
         if User.objects.filter(email=email).exists():
-            raise forms.ValidationError(' user with this email is already registered')    
+            raise forms.ValidationError(' user with this email is already registered -- Try loginigin or resting the password')    
         return email
 
 class ProfileEditForm(forms.ModelForm):

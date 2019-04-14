@@ -1,17 +1,21 @@
 from django.shortcuts import render, get_object_or_404
-from django.views.generic import ListView
+from django.views.generic import ListView, CreateView, DetailView
 from .models import Post
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from common.decorators import is_ajax
+from .forms import PostForm
+from django.urls import reverse_lazy
 
 
 class PostListView(ListView):
     template_name = 'posts/post_list.html'
     model = Post
     context_object_name = 'posts'
-
+    extra_context = {
+        'source': 'home'
+    }
 
 @login_required
 @require_POST
@@ -37,3 +41,34 @@ def LikingUsers(request, id):
     users = post.user_likes.all()
 
     return render(request, 'posts/liking_users.html', {'users': users})
+
+class WritePost(CreateView):
+    form_class = PostForm
+    template_name = 'posts/create.html'
+    context_object_name = 'form'
+    success_url = reverse_lazy('posts:post_list_url')
+    extra_context = {
+        'source': 'create_post'
+    }
+    def form_valid(self, form):
+        new_form = form.save(commit=False)
+        new_form.profile = self.request.user.profile
+        self.object = new_form.save()
+        return super().form_valid(form)
+
+class UserPosts(ListView):
+    
+    
+    def get_queryset(self):
+        id = self.kwargs.get('id')
+        return Post.objects.filter(profile__id=id)
+    context_object_name = 'posts'
+
+class PostDetail(DetailView):
+    template_name = 'posts/post_detail.html'
+    context_object_name = 'post'
+
+    def get_queryset(self):
+        slug = self.kwargs.get('slug')
+        return Post.objects.filter(slug=slug)
+    

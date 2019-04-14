@@ -6,7 +6,13 @@
 
 {%for post in posts %}
 <div class="post">
-{{post.title}}
+  <div >
+  {% thumbnail post.profile.image '50x50'  upscale=False as im%}
+  <img src="{{im.url}}" class='personal_iamge' >
+  <a href="{%url 'posts:user_posts_url' id=post.profile.id %}">{{post.profile}}</a> 
+  {%endthumbnail%}
+</div>
+<a href="{{post.get_absolute_url}}">{{post.title}}</a> 
 <br>
 {% thumbnail post.image '400' as im%}
 <img src="{{im.url}}">
@@ -46,7 +52,7 @@ function like(element){
   var counter = element.getAttribute('data-counter')
   $.ajax({
     type: 'POST',
-    url: {%url 'posts:like_post_url' %},
+    url: '{%url 'posts:like_post_url' %}',
     data: {
       id: element.getAttribute('data-id')
     },

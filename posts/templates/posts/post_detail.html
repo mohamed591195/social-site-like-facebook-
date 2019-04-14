@@ -1,0 +1,60 @@
+{%extends 'base.html'%}
+{%load thumbnail%}
+{%load tags%}
+{%block body%}
+<div class="post">
+    <div >
+    {% thumbnail post.profile.image '50x50'  upscale=False as im%}
+    <img src="{{im.url}}" class='personal_iamge' >
+    <a href="{%url 'posts:user_posts_url' id=post.profile.id %}">{{post.profile}}</a> 
+    {%endthumbnail%}
+  </div>
+  <a href="{{post.get_absolute_url}}">{{post.title}}</a> 
+  <br>
+  {% thumbnail post.image '400' as im%}
+  <img src="{{im.url}}">
+  {%endthumbnail%}
+  
+  {%if post.video%}
+  <video width="400"  controls>
+      <source src="{{post.video.url}}" type="video/mp4">
+      
+    Your browser does not support the video tag.
+    </video>
+    <br>
+  {%endif%}
+  
+  {%if post.content%}
+  {{post.content|linebreaks}}
+  
+  {%endif%}
+  
+  {{ post.created}}
+  {% with post.user_likes.count as likes_num %}
+  <a href={{post.get_liking_users}} style="display: block" class='total_likes'>{{likes_num}} like{{ likes_num|pluralize }}</a>
+  <button type="button"  data-id="{{post.id}}" id='button' onclick="like(this)">{{post|is_liked:user}}</button>
+  {%endwith%}
+  <hr>
+  
+  </div>
+{%endblock%}
+{%block js%}
+<script>
+    function like(element){
+        $.ajax({
+            type:'POST',
+            url: {%url 'posts:like_post_url'%},
+            data:{
+                id: element.getAttribute('data-id')
+            },
+            beforeSend: function(request){
+                request.setRequestHeader('X-CSRFToken', '{{csrf_token}}')
+            },
+            success: function(data){
+                document.querySelector('.total_likes').innerHTML = data.total_likes +'likes'
+                element.innerHTML = data.action
+            }
+        })
+    }
+</script>
+{%endblock%}

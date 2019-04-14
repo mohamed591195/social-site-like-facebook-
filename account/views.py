@@ -79,7 +79,7 @@ def EditInfo(request, username):
         else:
             pro_form = ProfileEditForm(instance=user.profile)
             user_form = UserEditForm(instance=user)
-        return render(request, 'account/Eprofile.html', {'user_form': user_form, 'pro_form': pro_form})
+        return render(request, 'account/Eprofile.html', {'user_form': user_form, 'pro_form': pro_form, 'source': 'edit_profile'})
     else:
         return HttpResponse('it\'s forbidden , you are not allowed to get this page')
 

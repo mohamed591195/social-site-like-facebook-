@@ -31,6 +31,9 @@ form{
 .left{
     float: right
 }
+.right{
+    float: left
+}
 
 .active{
     text-decoration: none;
@@ -42,4 +45,9 @@ form{
 .post{
     margin: auto;
     width: 50%;
+}
+
+
+.personal_iamge{
+    border-radius: 100%;
 }
