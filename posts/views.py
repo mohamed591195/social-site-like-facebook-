@@ -7,15 +7,20 @@ from django.contrib.auth.decorators import login_required
 from common.decorators import is_ajax
 from .forms import PostForm
 from django.urls import reverse_lazy
-
+from comments.forms import CommentForm
 
 class PostListView(ListView):
     template_name = 'posts/post_list.html'
-    model = Post
     context_object_name = 'posts'
     extra_context = {
         'source': 'home'
     }
+    def get_queryset(self):
+        posts = []
+        for user in self.request.user.following.all():
+            posts += user.profile.posts.all()
+        return posts
+    
 
 @login_required
 @require_POST
@@ -56,18 +61,14 @@ class WritePost(CreateView):
         self.object = new_form.save()
         return super().form_valid(form)
 
-class UserPosts(ListView):
-    
-    
-    def get_queryset(self):
-        id = self.kwargs.get('id')
-        return Post.objects.filter(profile__id=id)
-    context_object_name = 'posts'
+
 
 class PostDetail(DetailView):
     template_name = 'posts/post_detail.html'
     context_object_name = 'post'
-
+    extra_context = {
+        'form': CommentForm
+    }
     def get_queryset(self):
         slug = self.kwargs.get('slug')
         return Post.objects.filter(slug=slug)

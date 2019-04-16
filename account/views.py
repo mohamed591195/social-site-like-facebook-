@@ -2,17 +2,21 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
 from .forms import RegisterForm, ProfileEditForm, UserEditForm
 from django.contrib import messages
-from django.views.generic import TemplateView
-from .models import Profile
+from django.views.generic import TemplateView, ListView
+from .models import Profile, Contact
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
 from .tokens import account_activation_token
 from django.core.mail import EmailMessage 
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from common.decorators import is_ajax
+from posts.models import Post
+
 
 
 def RegisterView(request):
@@ -83,3 +87,32 @@ def EditInfo(request, username):
     else:
         return HttpResponse('it\'s forbidden , you are not allowed to get this page')
 
+
+class ListProfilesView(ListView):
+    template_name = 'account/profiles_list.html'
+    model = Profile
+    context_object_name = 'profiles'
+
+@login_required
+@require_POST
+@is_ajax
+def follow_user(request):
+    user_id = request.POST.get('id')
+    user = get_object_or_404(User, id=user_id)
+    action = ''
+    if Contact.objects.filter(user_to=user, user_from=request.user).exists():
+        Contact.objects.filter(user_to=user, user_from=request.user).delete()
+        action = 'follow'
+    else:
+        Contact.objects.get_or_create(user_to=user, user_from=request.user)
+        action = 'unfollow'
+    return JsonResponse({'action': action})
+
+
+
+def ProfileDetail(request, id):
+
+    posts = Post.objects.filter(profile__id=id)
+    profile = Profile.objects.get(id=id)
+    return render(request, 'account/user_post.html', {'posts': posts, 'profile': profile})
+    

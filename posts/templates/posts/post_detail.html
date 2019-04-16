@@ -1,12 +1,13 @@
 {%extends 'base.html'%}
 {%load thumbnail%}
 {%load tags%}
+{%load crispy_forms_tags%}
 {%block body%}
 <div class="post">
     <div >
     {% thumbnail post.profile.image '50x50'  upscale=False as im%}
     <img src="{{im.url}}" class='personal_iamge' >
-    <a href="{%url 'posts:user_posts_url' id=post.profile.id %}">{{post.profile}}</a> 
+    <a href="{%url 'account:user_posts_url' id=post.profile.id %}">{{post.profile}}</a> 
     {%endthumbnail%}
   </div>
   <a href="{{post.get_absolute_url}}">{{post.title}}</a> 
@@ -34,9 +35,19 @@
   <a href={{post.get_liking_users}} style="display: block" class='total_likes'>{{likes_num}} like{{ likes_num|pluralize }}</a>
   <button type="button"  data-id="{{post.id}}" id='button' onclick="like(this)">{{post|is_liked:user}}</button>
   {%endwith%}
-  <hr>
-  
-  </div>
+  <br>
+
+  <form method="POST" action="{%url 'comments:post_comment_url'%}" class="comment_from">
+      
+        {%csrf_token%}
+        {{form|crispy}}
+        <input type="hidden" value="{{post.id}}" name="post">
+        <input type="submit" value="Comment">
+    </form>
+    <br>
+ {%include 'comments/comments.html'%}
+
+ <hr>
 {%endblock%}
 {%block js%}
 <script>

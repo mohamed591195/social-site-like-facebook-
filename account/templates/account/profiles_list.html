@@ -1,0 +1,20 @@
+{%extends 'base.html'%}
+{%load thumbnail%}
+{%block body%}
+<div class="post">
+{%for profile in profiles%}
+
+    <div >
+        {% thumbnail profile.image '50x50'   as im%}
+        {%if profile.user.is_staff%}
+        <blockquote style="display: inline"> --->> admin</blockquote>
+        {%endif%}
+        <img src="{{im.url}}" class='personal_iamge' >
+        <a href="{%url 'account:user_detail_url' id=profile.id %}">{{profile}}</a> 
+        
+        {%endthumbnail%}
+    </div>
+    
+{%endfor%}
+</div>
+{%endblock%}

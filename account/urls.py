@@ -47,7 +47,10 @@ urlpatterns = [
         name='pass_reset_done_url'),
     
     path('activate/<uidb64>/<token>/', views.activate, name='activate_url'),
-    path('edit_info/<username>/', views.EditInfo, name='edit_info_url')
+    path('edit_info/<username>/', views.EditInfo, name='edit_info_url'),
+    path('users_list/', views.ListProfilesView.as_view(), name='profiles_list_url'),
+    path('follow_user/', views.follow_user, name='follow_user_url'),
+    path('userdetail/<int:id>/', views.ProfileDetail, name='user_detail_url'),
 
 ]
 

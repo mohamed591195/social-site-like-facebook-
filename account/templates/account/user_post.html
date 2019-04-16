@@ -1,13 +1,29 @@
+
 {% extends "base.html" %}
 {%load tags%}
 {% block body %}
-{% load thumbnail %}
+{%load thumbnail%}
+
+<div style="margin: 4%;">
+ 
+  {% thumbnail profile.image '150x150'  upscale=False as im%}
+  <img src="{{im.url}}"  >
+  {%endthumbnail%} 
+  <h4 style="display:inline"><a href="{%url 'account:user_detail_url' id=profile.id %}">{{profile}}</a></h4>
+  
+  <button id='fol' type="button" onclick="follow(this)">
+    {%if user in profile.user.followers.all %}
+    UnFollow
+    {%else%}
+    Follow
+    {%endif%}
+  </button>
+ </div>
 
 {%for post in posts %}
-
 <div class="post">
   <div >
-  {% thumbnail post.profile.image '50x50'  as im%}
+  {% thumbnail post.profile.image '50x50'  upscale=False as im%}
   <img src="{{im.url}}" class='personal_iamge' >
   <a href="{%url 'account:user_detail_url' id=post.profile.id %}">{{post.profile}}</a> 
   {%endthumbnail%}
@@ -44,6 +60,8 @@
 
 {%endfor%}
 
+
+
 {% endblock%}
 {%block js%}
 
@@ -68,6 +86,23 @@ function like(element){
       element.innerHTML = data.action
     }
   })
+}
+
+function follow(element){
+    $.ajax({
+      type: 'POST',
+      url: '{%url 'account:follow_user_url'%}',
+      data:{
+        'id': {{profile.id}},
+      },
+      beforeSend: function(request){
+        request.setRequestHeader('X-CSRFToken', '{{csrf_token}}')
+      },
+      success: function(data){
+        element.innerHTML = data.action
+        console.log(data.action)
+      }
+    })
 }
 </script>
 {%endblock%}

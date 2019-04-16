@@ -1,0 +1,39 @@
+{%load crispy_forms_tags%}
+{%load thumbnail%}
+<div >
+    {%for comment in post.comments.all %}
+        <div >
+        {% thumbnail comment.profile.image '50x50'  upscale=False as im%}
+        <img src="{{im.url}}" class='personal_iamge' >
+        <a href="{%url 'posts:user_posts_url' id=comment.profile.id %}">{{comment.profile}}</a> 
+        {%endthumbnail%}
+        </div>
+    <!-- <h6>{{comment.profile}}</h6> -->
+        {% if comment.replies.all%}
+            <p>{{comment.comment}}</p>
+            {%for reply in comment.replies.all%}
+                <div >&nbsp; &nbsp; &nbsp; &nbsp;
+                    {% thumbnail reply.profile.image '50x50'  upscale=False as im%}
+                    <img src="{{im.url}}" class='personal_iamge' >
+                    <a href="{%url 'posts:user_posts_url' id=reply.profile.id %}">{{reply.profile}}</a> 
+                    {%endthumbnail%}
+                </div>
+                <!-- <p>&nbsp; &nbsp;_|replier|_{{reply.profile}}</p> -->
+                <p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; _ |reply|_{{reply}}</p>
+                {%empty%}
+                <p>there is no replies</p>
+            {%endfor%}
+        {%else%}
+            <p>{{comment.comment}}</p>
+
+        {%endif%}
+
+<form method="POST" action="{%url 'comments:post_comment_url'%}" class="comment_from">
+        {%csrf_token%}
+        {%for field in form%}
+        reply:{{field}}
+        {%endfor%}
+        <input type="hidden" value="{{comment.id}}" name="_comment">
+        <input type="submit" value="reply">
+    </form>
+{%endfor%}</div>
