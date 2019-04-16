@@ -16,7 +16,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from common.decorators import is_ajax
 from posts.models import Post
-
+from action.models import Action
 
 
 def RegisterView(request):
@@ -64,6 +64,7 @@ def activate(request, uidb64, token):
     if user is not None and account_activation_token.check_token(user, token):
         user.is_active = True
         user.save()
+        Action.objects.create(profile=user.profile , verb='activated his account so you can follow him', target=user.profile)
         messages.success(request, 'you have registered and confirmed your email successfully {}'.format(user.get_full_name()))
         return redirect('account:dash_url')
     else:
@@ -79,6 +80,7 @@ def EditInfo(request, username):
             if pro_form.is_valid() and user_form.is_valid():
                 pro_form.save()
                 user_form.save()
+                Action.objects.create(profile=request.user.profile, verb='updated his profile status', target=request.user.profile)
                 messages.success(request, 'your account have been updated successfully {}'.format(user.get_full_name()))
         else:
             pro_form = ProfileEditForm(instance=user.profile)
@@ -103,9 +105,11 @@ def follow_user(request):
     if Contact.objects.filter(user_to=user, user_from=request.user).exists():
         Contact.objects.filter(user_to=user, user_from=request.user).delete()
         action = 'follow'
+        
     else:
-        Contact.objects.get_or_create(user_to=user, user_from=request.user)
+        Contact.objects.create(user_to=user, user_from=request.user)
         action = 'unfollow'
+        Action.objects.create(profile=request.user.profile , verb='followed', target=user.profile)
     return JsonResponse({'action': action})
 
 

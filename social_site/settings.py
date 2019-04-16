@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     #own
     'account.apps.AccountConfig',
     'posts.apps.PostsConfig',
-    'comments.apps.CommentsConfig'
+    'comments.apps.CommentsConfig',
+    'action.apps.ActionConfig'
 ]
 
 MIDDLEWARE = [

@@ -5,6 +5,8 @@ from django.urls import reverse
 from django.utils.text import slugify
 from django.contrib.contenttypes.fields import GenericRelation
 from comments.models import Comment
+from action.models import Action
+
 
 class Post(models.Model):
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='posts')
@@ -17,7 +19,7 @@ class Post(models.Model):
     user_likes = models.ManyToManyField(Profile, related_name='liked_posts', blank=True)
     updated = models.DateTimeField(auto_now=True)
     comments = GenericRelation(Comment, content_type_field='target_ct', object_id_field='target_id', related_query_name='post')
-    
+    actions = GenericRelation(Action, content_type_field='target_ct', object_id_field='target_id', related_query_name='post')
     def get_liking_users(self):
         return reverse('posts:liking_users', args=[self.id])
 

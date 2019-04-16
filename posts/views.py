@@ -8,6 +8,7 @@ from common.decorators import is_ajax
 from .forms import PostForm
 from django.urls import reverse_lazy
 from comments.forms import CommentForm
+from action.models import Action
 
 class PostListView(ListView):
     template_name = 'posts/post_list.html'
@@ -37,6 +38,8 @@ def PostLikeView(request):
     else:
         post.user_likes.add(request.user.profile)
         action='dislike'
+        
+        Action.objects.create(profile=request.user.profile, verb='liked', target=post)
     total_likes = post.user_likes.all().count()
     print(total_likes)
     return JsonResponse({'total_likes': total_likes, 'action': action})
@@ -59,6 +62,7 @@ class WritePost(CreateView):
         new_form = form.save(commit=False)
         new_form.profile = self.request.user.profile
         self.object = new_form.save()
+        Action.objects.create(profile=self.request.user.profile, verb='published new post', target=new_form)
         return super().form_valid(form)
 
 
