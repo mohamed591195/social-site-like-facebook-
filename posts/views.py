@@ -9,6 +9,8 @@ from .forms import PostForm
 from django.urls import reverse_lazy
 from comments.forms import CommentForm
 from action.models import Action
+from django.db.models import Count
+
 
 class PostListView(ListView):
     template_name = 'posts/post_list.html'
@@ -17,9 +19,14 @@ class PostListView(ListView):
         'source': 'home'
     }
     def get_queryset(self):
-        posts = []
-        for user in self.request.user.following.all():
-            posts += user.profile.posts.all()
+        if self.request.user.is_authenticated:
+            posts = []
+            for user in self.request.user.following.all():
+                posts += user.profile.posts.all()
+
+            posts += self.request.user.profile.posts.all()
+        else:
+            posts = []
         return posts
     
 
@@ -77,3 +84,9 @@ class PostDetail(DetailView):
         slug = self.kwargs.get('slug')
         return Post.objects.filter(slug=slug)
     
+
+def MostRatedPosts(request):
+    # posts = Post.objects.annotate(num_likes=Count('user_likes')).order_by('-num_likes')
+    posts = Post.objects.annotate(num_likes=Count('user_likes', distinct=True), num_comments=Count('comments', distinct=True)).order_by('-num_likes', '-num_comments')
+    
+    return render(request, 'posts/most_rated_posts.html', {'posts': posts, 'source': 'most_rated_posts'})

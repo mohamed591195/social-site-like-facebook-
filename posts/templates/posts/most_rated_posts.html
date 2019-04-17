@@ -2,8 +2,8 @@
 {%load tags%}
 {% block body %}
 {% load thumbnail %}
-{% if user.is_authenticated %}
-<h3>follow more users to see thier posts</h3>
+
+<q>Notice</q><h1>this is a list of posts sorted by the number of likes and comments </h1>
 {%for post in posts %}
 
 <div class="post">
@@ -44,10 +44,7 @@
 </div>
 
 {%endfor%}
-{%else%}
-<h2>We are welcomin new users, you can <a href="{%url 'account:register_url'%}">Register</a> now </h2>
-<h3>OR <a href="{%url 'account:login_url'%}">login</a> </h3>
-{%endif%}
+
 {% endblock%}
 {%block js%}
 

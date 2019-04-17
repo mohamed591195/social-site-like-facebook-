@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
-from .forms import RegisterForm, ProfileEditForm, UserEditForm
+from .forms import RegisterForm, ProfileEditForm, UserEditForm, SearchUserForm
 from django.contrib import messages
 from django.views.generic import TemplateView, ListView
 from .models import Profile, Contact
@@ -17,7 +17,7 @@ from django.views.decorators.http import require_POST
 from common.decorators import is_ajax
 from posts.models import Post
 from action.models import Action
-
+from django.db.models import Q
 
 def RegisterView(request):
     if request.method == 'POST':
@@ -50,9 +50,15 @@ def RegisterView(request):
         form = RegisterForm()
     return render(request, 'account/register.html', {'form': form, 'title': 'register', 'source': 'register'})
 
-class DashView(TemplateView):
-    template_name = 'account/dash.html'
-    extra_context = {'source': 'dash'}
+def DashView(request):
+    actions = []
+    for user in request.user.following.all():
+        actions += user.profile.actions.all()
+    actions += request.user.profile.actions.all()
+    
+    return render(request, 'account/dash.html', {'source': 'dash', 'actions': actions})
+    
+    
 
 def activate(request, uidb64, token):
     try:
@@ -90,10 +96,20 @@ def EditInfo(request, username):
         return HttpResponse('it\'s forbidden , you are not allowed to get this page')
 
 
-class ListProfilesView(ListView):
-    template_name = 'account/profiles_list.html'
-    model = Profile
-    context_object_name = 'profiles'
+
+
+def ListProfilesView(request):
+    if request.method == 'POST':
+        keyword = request.POST.get('name').lower()
+        users = User.objects.filter(Q(first_name__icontains=keyword)|Q(last_name__icontains=keyword))
+        form = SearchUserForm(request.POST)
+        profiles = []
+        for user in users:
+            profiles += [user.profile]
+    else:
+        form = SearchUserForm()
+        profiles = Profile.objects.all()
+    return render(request, 'account/profiles_list.html', {'profiles': profiles, 'form': form})
 
 @login_required
 @require_POST
@@ -118,5 +134,8 @@ def ProfileDetail(request, id):
 
     posts = Post.objects.filter(profile__id=id)
     profile = Profile.objects.get(id=id)
-    return render(request, 'account/user_post.html', {'posts': posts, 'profile': profile})
+    state = False
+    if request.user.profile == profile:
+        state = True
+    return render(request, 'account/user_post.html', {'posts': posts, 'profile': profile , 'state': state})
     

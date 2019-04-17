@@ -1,20 +1,28 @@
 {%extends 'base.html'%}
 {%load thumbnail%}
+{%load crispy_forms_tags%}
 {%block body%}
+<form method="POST" action="">
+    {%csrf_token%}
+    {{form|crispy}}
+    <button type="submit">Find</button>
+</form>
 <div class="post">
+    
 {%for profile in profiles%}
 
     <div >
         {% thumbnail profile.image '50x50'   as im%}
+        
+        <img src="{{im.url}}" class='personal_iamge' >
+        <a href="{%url 'account:user_detail_url' id=profile.id %}">{{profile}}</a> 
         {%if profile.user.is_staff%}
         <blockquote style="display: inline"> --->> admin</blockquote>
         {%endif%}
-        <img src="{{im.url}}" class='personal_iamge' >
-        <a href="{%url 'account:user_detail_url' id=profile.id %}">{{profile}}</a> 
-        
         {%endthumbnail%}
     </div>
     
 {%endfor%}
+
 </div>
 {%endblock%}

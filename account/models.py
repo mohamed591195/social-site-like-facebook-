@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.urls import reverse
 
 class Profile(models.Model):
     GENDER_CHOICES = (('male', 'M'), ('female', 'F'))
@@ -11,6 +12,8 @@ class Profile(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
+    def get_absolute_url(self):
+        return reverse('account:user_detail_url', kwargs={'id': self.id})
     def __str__(self):
         return self.user.get_full_name()
 

@@ -8,7 +8,7 @@ from django.urls import reverse_lazy
 app_name = 'account'
 urlpatterns = [
     path('register/', views.RegisterView, name='register_url'),
-    path('', views.DashView.as_view(), name='dash_url'),
+    path('', views.DashView, name='dash_url'),
 
     path('login/', auth_views.LoginView.as_view(template_name='account/login.html', 
         extra_context={'source':'login'}), 
@@ -48,7 +48,7 @@ urlpatterns = [
     
     path('activate/<uidb64>/<token>/', views.activate, name='activate_url'),
     path('edit_info/<username>/', views.EditInfo, name='edit_info_url'),
-    path('users_list/', views.ListProfilesView.as_view(), name='profiles_list_url'),
+    path('users_list/', views.ListProfilesView, name='profiles_list_url'),
     path('follow_user/', views.follow_user, name='follow_user_url'),
     path('userdetail/<int:id>/', views.ProfileDetail, name='user_detail_url'),
 
